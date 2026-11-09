@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+          crossorigin="anonymous">
+    <title>BOTGO - Review Form</title>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <nav class="navbar navbar-expand-lg bg-success-subtle" data-bs-theme="light">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbar-content"
+                    aria-controls="navbar-content"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbar-content">
+                <ul class="navbar-nav w-100 text-center flex-lg-row">
+                    <li class="nav-item flex-lg-fill">
+                        <a class="nav-link text-dark fs-5 fw-semibold w-100"
+                           href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item flex-lg-fill">
+                        <a class="nav-link text-dark fs-5 fw-semibold w-100"
+                           href="{% url 'book_list' %}">Book Listings</a>
+                    </li>
+                    <li class="nav-item flex-lg-fill">
+                        <a class="nav-link text-dark fs-5 fw-semibold w-100"
+                           href="{% url 'review_create' %}">Write a Review</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1">
+        <div class="container mt-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h1 class="mb-4 text-center">
+                        {% if review %}Edit Review{% else %}Write a Review{% endif %}
+                    </h1>
+                    <p class="text-muted">
+                        We value your feedback! Please fill out the form below to share
+                        your thoughts on the book you've read. Your review will help
+                        other readers make informed decisions. Fields marked with
+                        <span class="text-danger">*</span> are required.
+                    </p>
+
+                    <form id="review-form" class="card shadow-sm p-4"
+                          method="post" novalidate>
+                        {% csrf_token %}
+
+                        <div id="review-form-errors"
+                             class="alert alert-danger d-none"
+                             role="alert"></div>
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="{{ form.user.id_for_label }}" class="form-label">
+                                Your Name <span class="text-danger">*</span>
+                            </label>
+                            {{ form.user }}
+                            <div id="{{ form.user.auto_id }}-error"
+                                 class="invalid-feedback"></div>
+                            {% for error in form.user.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.book.id_for_label }}" class="form-label">
+                                Book Title <span class="text-danger">*</span>
+                            </label>
+                            {{ form.book }}
+                            <div id="{{ form.book.auto_id }}-error"
+                                 class="invalid-feedback"></div>
+                            {% for error in form.book.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.rating.id_for_label }}" class="form-label">
+                                Rating <span class="text-danger">*</span>
+                            </label>
+                            {{ form.rating }}
+                            <div id="{{ form.rating.auto_id }}-error"
+                                 class="invalid-feedback"></div>
+                            {% for error in form.rating.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.text.id_for_label }}" class="form-label">
+                                Review <span class="text-danger">*</span>
+                            </label>
+                            {{ form.text }}
+                            <div id="{{ form.text.auto_id }}-error"
+                                 class="invalid-feedback"></div>
+                            {% for error in form.text.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button type="submit" class="btn btn-warning">
+                                {% if review %}Save Changes{% else %}Submit Review{% endif %}
+                            </button>
+                            <div class="ms-auto">
+                                <a href="{% url 'book_list' %}"
+                                   class="btn btn-sm btn-outline-secondary">
+                                    Cancel
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-white text-center py-3">
+        <p class="mb-0">&copy; 2026 BOTGO</p>
+    </footer>
+
+    <script>
+        const reviewForm = document.querySelector("#review-form");
+        const reviewFormErrors = document.querySelector("#review-form-errors");
+        const reviewFields = {
+            user: reviewForm.elements.user,
+            book: reviewForm.elements.book,
+            rating: reviewForm.elements.rating,
+            text: reviewForm.elements.text,
+        };
+
+        reviewForm.addEventListener("submit", (event) => {
+            const errors = [];
+
+            Object.values(reviewFields).forEach((field) => {
+                field.classList.remove("is-invalid", "bg-danger-subtle");
+                document.querySelector(`#${field.id}-error`).textContent = "";
+            });
+
+            const addError = (field, message) => {
+                field.classList.add("is-invalid", "bg-danger-subtle");
+                document.querySelector(`#${field.id}-error`).textContent = message;
+                errors.push(message);
+            };
+
+            if (!reviewFields.user.value) {
+                addError(reviewFields.user, "Please select a user.");
+            }
+
+            if (!reviewFields.book.value) {
+                addError(reviewFields.book, "Please select a book.");
+            }
+
+            if (!reviewFields.rating.value) {
+                addError(reviewFields.rating, "Please select a rating.");
+            }
+
+            if (!reviewFields.text.value.trim()) {
+                addError(reviewFields.text, "Please enter a review.");
+            }
+
+            if (errors.length > 0) {
+                event.preventDefault();
+                reviewFormErrors.innerHTML = errors
+                    .map((error) => `<div>${error}</div>`)
+                    .join("");
+                reviewFormErrors.classList.remove("d-none");
+            } else {
+                reviewFormErrors.innerHTML = "";
+                reviewFormErrors.classList.add("d-none");
+            }
+        });
+    </script>
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous">
+    </script>
+</body>
+</html>

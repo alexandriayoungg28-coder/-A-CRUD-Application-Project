@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          crossorigin="anonymous">
+    <title>{% if book %}Edit Book{% else %}Add Book{% endif %}</title>
+</head>
+<body>
+    <main class="container py-4">
+        <h1 class="mb-4">
+            {% if book %}Edit a Book{% else %}Add New Book{% endif %}
+        </h1>
+        <p class="text-muted">
+            <span class="text-danger">*</span> Required fields
+        </p>
+        <form id="book-form" method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            <div id="book-form-errors" class="alert alert-danger d-none" role="alert"></div>
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label">
+                        {{ field.label }} <span class="text-danger">*</span>
+                    </label>
+                    {% if field.name == "publication_date" %}
+                        <div class="input-group">
+                            {{ field }}
+                            <button id="toggle-date-entry" type="button"
+                                    class="btn btn-outline-secondary">
+                                Type instead
+                            </button>
+                        </div>
+                        <input id="publication-date-text" type="text"
+                               class="form-control d-none mt-2"
+                               placeholder="YYYY-MM-DD"
+                               inputmode="numeric"
+                               aria-label="Type publication date">
+                        <div class="form-text">
+                            Use the calendar or type the date as YYYY-MM-DD.
+                        </div>
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                    <div id="{{ field.auto_id }}-error" class="invalid-feedback"></div>
+                </div>
+            {% endfor %}
+
+            <button id="book-submit" type="submit" class="btn btn-success">
+                {% if book %}Save Changes{% else %}Save Book{% endif %}
+            </button>
+        </form>
+
+        <a href="{% url 'book_list' %}" class="btn btn-outline-secondary mt-3">
+            Cancel
+        </a>
+
+<script>
+    const bookForm = document.querySelector("#book-form");
+    const bookFormErrors = document.querySelector("#book-form-errors");
+    const bookSubmit = document.querySelector("#book-submit");
+    const dateField = bookForm.elements.publication_date;
+    const dateToggle = document.querySelector("#toggle-date-entry");
+    const dateText = document.querySelector("#publication-date-text");
+    const isEditing = {% if book %}true{% else %}false{% endif %};
+    const hasExistingCover = {% if book and book.cover %}true{% else %}false{% endif %};
+    const coverClear = document.querySelector("#cover-clear_id");
+
+    dateToggle.addEventListener("click", () => {
+        const typingDate = dateText.classList.toggle("d-none") === false;
+        dateField.classList.toggle("d-none", typingDate);
+        dateToggle.textContent = typingDate ? "Use calendar" : "Type instead";
+
+        if (typingDate && dateField.value) {
+            dateText.value = dateField.value;
+        } else if (!typingDate && dateText.value) {
+            dateField.value = dateText.value;
+        }
+    });
+
+    dateText.addEventListener("input", () => {
+        dateField.value = dateText.value;
+    });
+
+    bookForm.addEventListener("submit", (event) => {
+        const errors = [];
+
+        const fields = {
+            title: bookForm.elements.title,
+            author: bookForm.elements.author,
+            genre: bookForm.elements.genre,
+            publication_date: dateField,
+            cover: bookForm.elements.cover,
+            description: bookForm.elements.description,
+        };
+
+        Object.values(fields).forEach((field) => {
+            field.classList.remove("is-invalid");
+            field.classList.remove("bg-danger-subtle");
+            document.querySelector(`#${field.id}-error`).textContent = "";
+        });
+
+        const addError = (field, message) => {
+            field.classList.add("is-invalid");
+            field.classList.add("bg-danger-subtle");
+            document.querySelector(`#${field.id}-error`).textContent = message;
+            errors.push(message);
+        };
+
+        if (!fields.title.value.trim()) {
+            addError(fields.title, "Please enter a book title.");
+        }
+
+        if (!fields.author.value.trim()) {
+            addError(fields.author, "Please enter the author's name.");
+        }
+
+        if (!fields.genre.value.trim()) {
+            addError(fields.genre, "Please enter a genre.");
+        }
+
+        if (!fields.publication_date.value) {
+            addError(fields.publication_date, "Please select a publication date.");
+        }
+
+        const coverWasCleared = coverClear && coverClear.checked;
+        if (!fields.cover.files.length && (!isEditing || !hasExistingCover || coverWasCleared)) {
+            addError(fields.cover, "Please choose a book cover.");
+        }
+
+        if (!fields.description.value.trim()) {
+            addError(fields.description, "Please write a book description.");
+        }
+
+        if (errors.length > 0) {
+            event.preventDefault();
+            bookFormErrors.innerHTML = errors
+                .map((error) => `<div>${error}</div>`)
+                .join("");
+            bookFormErrors.classList.remove("d-none");
+        } else {
+            bookFormErrors.innerHTML = "";
+            bookFormErrors.classList.add("d-none");
+            bookSubmit.disabled = true;
+            bookSubmit.textContent = "Saving...";
+            bookForm.setAttribute("aria-busy", "true");
+        }
+    });
+</script>
+
+
+
+
+    </main>
+</body>
+</html>

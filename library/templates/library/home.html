@@ -1,0 +1,172 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+          crossorigin="anonymous">
+    <title>BOTGO - Home</title>
+    </head>
+    <!--
+        d-flex turns the body into a flex container.
+        flex-column stacks the navbar, main content, and footer vertically.
+        min-vh-100 makes the body at least as tall as the browser window.
+    -->
+    <body class="d-flex flex-column min-vh-100">
+    <!--
+        Bootstrap navbar:
+        navbar-expand-lg shows the links on large screens and collapses them
+        behind the toggle button on smaller screens.
+        bg-success-subtle gives the navbar a light green background.
+    -->
+    <nav class="navbar navbar-expand-lg bg-success-subtle" data-bs-theme="light">
+        <!-- container-fluid lets the navbar use the full width of the browser. -->
+        <div class="container-fluid">
+            <!--
+                This button opens and closes the mobile navigation menu.
+                data-bs-target points to the menu's id below.
+            -->
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbar-content"
+                    aria-controls="navbar-content"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- This section collapses on small screens and expands on large screens. -->
+            <div class="collapse navbar-collapse" id="navbar-content">
+                <!--
+                    w-100 fills the available width, text-center centers each link,
+                    and flex-lg-row places the links in a row on large screens.
+                -->
+                <ul class="navbar-nav w-100 text-center flex-lg-row">
+                    <!-- flex-lg-fill gives each link an equal amount of space. -->
+                    <li class="nav-item flex-lg-fill">
+                        <!-- text-dark makes the link dark; fs-5 increases its size; fw-semibold makes it bolder. -->
+                        <a class="nav-link text-dark fs-5 fw-semibold w-100" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item flex-lg-fill">
+                        <a class="nav-link text-dark fs-5 fw-semibold w-100" href="{% url 'book_list' %}">
+                            Book Listings
+                        </a>
+                    </li>
+                    <li class="nav-item flex-lg-fill">
+                        <a class="nav-link text-dark fs-5 fw-semibold w-100" href="{% url 'review_create' %}">
+                            Write a Review
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!--
+        flex-grow-1 makes the main section fill any extra vertical space.
+        This pushes the footer to the bottom when the page has little content.
+    -->
+    <main class="flex-grow-1 d-flex flex-column">
+
+    
+         <section class="bg-dark text-white py-5">
+            <div class="container text-center">
+                <h1 class="display-4">Books on the Go!</h1>
+                <p class="lead">
+                    Browse books, leave a review, and share your recommendations.
+                </p>
+            </div>
+        </section>
+
+    <!-- The container centers the section; it does not create a card around each book. -->
+    <section class="container py-5">
+            <div class="text-center mb-4">
+                <h2>Featured Books</h2>
+                <p class="text-muted text-black">
+                    Top picks you don't want to miss!
+                </p>
+                <!-- row aligns the books in a grid; gx-3 and gy-5 add horizontal
+                     and vertical spacing without adding visible containers. -->
+                <div class="row gx-3 gy-5">
+                 <!-- col-md-3 means four books fit across at medium widths and above.
+                      Additional books using this same block wrap to another row. -->
+                 <div class="col-md-3">
+                    <!-- col-md-3 makes each book one-quarter width on medium screens. -->
+                    <!-- Bootstrap's ratio-1x1 gives every featured cover a square
+                         display area. Bootstrap's object-fit-contain shows the
+                         complete image without custom CSS. -->
+                    <div class="ratio ratio-1x1">
+                        <img src="{% static 'library/images/featured-book1.jpeg' %}" alt="Featured Book 1"
+                             class="img-fluid rounded object-fit-contain">
+                    </div>
+                </div>
+           
+                <div class="col-md-3">
+                    <div class="ratio ratio-1x1">
+                        <img src="{% static 'library/images/featured-book2.jpeg' %}" alt="Featured Book 2"
+                             class="img-fluid rounded object-fit-contain">
+                    </div>
+                </div>
+          
+                <div class="col-md-3">
+                    <div class="ratio ratio-1x1">
+                        <img src="{% static 'library/images/featured-book3.jpeg' %}" alt="Featured Book 3"
+                             class="img-fluid rounded object-fit-contain">
+                    </div>
+                </div>
+             <div class="col-md-3">
+                    <div class="ratio ratio-1x1">
+                        <img src="{% static 'library/images/featured-book4.jpeg' %}" alt="Featured Book 4"
+                             class="img-fluid rounded object-fit-contain">
+                    </div>
+                </div>
+            <!-- Make the books clickable so you can view more details about each one. -->
+            </div>
+            </div>
+        </section>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+        
+    </main>
+  
+    <!--
+        The footer stays after main in the flex column.
+        Because main grows to fill extra space, the footer is pushed to the bottom.
+        bg-dark creates the dark background, text-white makes the text white,
+        text-center centers the text, and py-3 adds vertical padding.
+    -->
+    <footer class="bg-dark text-white text-center py-3">
+        <p class="mb-0">&copy; 2026 BOTGO</p>
+    </footer>
+
+    <!-- Loads Bootstrap's JavaScript bundle, which powers the responsive toggle button. -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"
+    ></script>
+</body>
+</html>
+
+
+
+
+  
+
+
+
+
+
